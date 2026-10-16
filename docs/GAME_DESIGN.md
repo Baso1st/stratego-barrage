@@ -74,7 +74,7 @@ Three layers, with the rules kept apart from React so they're easy to test:
 
 ### Game engine (`src/game/`)
 
-- **Pure TypeScript,** with no React and no randomness except through a seeded random number generator that's passed in. The same inputs always give the same game, which makes tests and bug reports reproducible.
+- **Pure TypeScript,** with no React and no randomness except through a seeded random number generator that's passed in (`createRng`, a small mulberry32 generator). The same inputs always give the same game, which makes tests and bug reports reproducible. The app seeds one generator per session from the browser's `crypto`.
 - **Immutable state:** each move returns a new state, which keeps updates predictable and simple to test.
 - **All the rules live here,** covered by table-driven unit tests: every combat pairing, Scout lines and attacks, lakes, the back-and-forth limit, setup validation and game-over conditions.
 
@@ -98,7 +98,9 @@ interface GameState {
   result?: { winner: Player | null; reason: 'flag' | 'no-moves' | 'draw' }
 }
 
+createRng(seed): Rng                                // seeded random numbers, like Math.random
 createGame(): GameState
+randomSetup(player, rng): Placement[]               // a valid setup on random squares
 setupError(player, placements): string | null      // why a setup isn't valid, or null
 placeSetup(state, player, placements): GameState   // throws if the setup isn't valid
 legalMoves(state): Move[]
@@ -114,7 +116,7 @@ viewFor(state, player): PlayerView                  // hides the opponent's unre
 ### Computer opponent (`src/ai/`)
 
 - **Two functions:** `chooseSetup(rng)` places its pieces, and `chooseMove(view, rng)` picks its next move from what it can see. That keeps the AI separate from the engine and the UI, and testable on its own.
-- **Setup:** pick one of a few hand-made layouts and vary it randomly. For example, put the Flag in the back row, sometimes guarded by the Bomb and sometimes not, as a bluff.
+- **Setup:** pick one of four hand-made layouts and mirror it left to right half the time, for 8 variations. The Flag is always in the back rows; the Bomb guards it in some layouts and is a decoy elsewhere in others, as a bluff. The layouts are "guarded corner", "decoy bomb", "center fortress" and "behind the lake".
 - **Moves, by rules of thumb:** score every legal move and play the best one, breaking ties at random. The rules:
   - attack pieces known to be weaker;
   - move away from pieces known to be stronger;
@@ -162,9 +164,12 @@ A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't 
 
 ### Setup
 
-- Your four rows are highlighted, and a tray below the board holds your 8 pieces.
-- Tap a piece in the tray, then a square, to place it. Tap two placed pieces to swap them.
-- **Buttons:** **Randomize**, **Clear**, and **Start**, which is enabled once all 8 pieces are placed.
+- Your four rows are tinted, and a tray below the board holds your 8 pieces. A line above the board counts how many are placed.
+- **Placing:** tap a piece in the tray, then a square in your rows. If the square already has a piece, that one goes back to the tray.
+- **Rearranging:** tap a placed piece, then another square in your rows to move it there, or another piece to swap the two.
+- **The picked-up piece gets an amber ring.** Tapping outside your rows puts it down.
+- **Buttons:** **Randomize** puts all 8 pieces on random squares in your rows, **Clear** empties the board, and **Start** is enabled once all 8 pieces are placed.
+- **The computer sets up when you press Start,** so its layout can't be seen while you place yours.
 
 ### Playing
 
@@ -205,6 +210,7 @@ None right now.
 **Game**
 - No saved games.
 - Game over offers New game only, with no rematch.
+- The computer sets up when you press Start, so its layout can't be seen while you place yours.
 
 **UI**
 - Mobile first, with touch and mouse: tap or click to select, then to move. No keyboard controls and no drag-and-drop.

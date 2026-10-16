@@ -1,14 +1,22 @@
-import { isLake, type PlayerView } from '../game/index.ts'
+import { isLake, sameSquare, type PlayerView, type Square } from '../game/index.ts'
 import PieceToken from './PieceToken.tsx'
 
-/**
- * The 10×10 board as one player sees it, with their side at the bottom. It fills the width
- * it's given, and each lake is drawn as one 2×2 pool.
- */
-export default function Board({ view }: { view: PlayerView }) {
+interface BoardProps {
+  /** The pieces to show, with your side at the bottom (row 9). */
+  board: PlayerView['board']
+  /** Squares to tint, like your setup rows. */
+  isHighlighted?: (square: Square) => boolean
+  /** The square whose piece is picked up, if any. */
+  selected?: Square | null
+  /** Called when a land square is tapped. Without it, the board is for display only. */
+  onSquareClick?: (square: Square) => void
+}
+
+/** The 10×10 board. It fills the width it's given, and each lake is drawn as one 2×2 pool. */
+export default function Board({ board, isHighlighted, selected, onSquareClick }: BoardProps) {
   return (
     <div className="grid aspect-square w-full touch-manipulation grid-cols-10 grid-rows-10 gap-px overflow-hidden rounded-lg border border-grid bg-grid">
-      {view.board.flatMap((cells, row) =>
+      {board.flatMap((cells, row) =>
         cells.map((piece, col) => {
           const square = { row, col }
           if (isLake(square)) {
@@ -22,14 +30,20 @@ export default function Board({ view }: { view: PlayerView }) {
               />
             ) : null
           }
+          const tint = isHighlighted?.(square) ? 'bg-zone' : 'bg-square'
+          const ring = selected && sameSquare(selected, square) ? 'ring-3 ring-select ring-inset' : ''
           return (
-            <div
+            <button
               key={`${row}-${col}`}
-              className="@container flex items-center justify-center bg-square"
+              type="button"
+              disabled={!onSquareClick}
+              onClick={() => onSquareClick?.(square)}
+              aria-label={piece ? undefined : `Empty square, row ${row + 1}, column ${col + 1}`}
+              className={`@container flex items-center justify-center ${tint} ${ring}`}
               style={{ gridRow: row + 1, gridColumn: col + 1 }}
             >
               {piece && <PieceToken piece={piece} />}
-            </div>
+            </button>
           )
         }),
       )}

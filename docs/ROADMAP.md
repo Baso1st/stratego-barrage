@@ -4,7 +4,7 @@ The living record of where the project stands, and the only place progress is tr
 
 ## Current status
 
-**Working on:** Setup phase (not started yet).
+**Working on:** Play (not started yet).
 
 - **Project setup is complete.**
   - The app is React + TypeScript on Vite, with Vitest installed but no tests yet.
@@ -12,7 +12,8 @@ The living record of where the project stands, and the only place progress is tr
   - Every merge to `main` deploys to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/). `v0.2.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/).
   - Both sites show their version, and Dependabot keeps dependencies up to date.
 - **The game engine is built,** in `src/game/`, with all the rules.
-- **The board is on screen,** styled with Tailwind and laid out for a phone. It shows a fixed sample game (`src/sampleGame.ts`), seen from Red's side, until the setup phase replaces it. Nothing is tappable yet.
+- **The board is on screen,** styled with Tailwind and laid out for a phone.
+- **The setup phase works.** You place your pieces with the tray, Randomize, Clear and Start. When you press Start, the computer (`src/ai/`) sets up from one of its hand-made layouts. After that the board shows both armies, but nothing can move yet.
 - All of this is on the `engine-basics` branch, which isn't merged yet.
 - **How the game should work** (rules, system design and UI) is in [GAME_DESIGN.md](GAME_DESIGN.md).
 
@@ -23,7 +24,7 @@ We build these in order, one at a time, and finish each before starting the next
 - [x] **Project setup:** Vite, React and TypeScript, Vitest, CI, a protected `main`, test and production on Azure, and the template demo removed.
 - [x] **Game engine:** the rules as pure TypeScript in `src/game/`. Setup, legal moves (Scouts, lakes and the back-and-forth limit), combat, win, loss and draw, and each player's view of the board. Nothing on screen.
 - [x] **Board on screen:** add Tailwind, and draw the 10×10 board, the lakes and the pieces from a sample game, in the phone layout.
-- [ ] **Setup phase:** you place your 8 pieces in your four rows (with Randomize, Clear and Start), and the computer places its own.
+- [x] **Setup phase:** you place your 8 pieces in your four rows (with Randomize, Clear and Start), and the computer places its own.
 - [ ] **Play:** tap to select and move, see fights, and take turns against a computer that makes random legal moves. This is the first playable release.
 - [ ] **Computer opponent:** replace the random moves with the rules of thumb.
 - [ ] **Polish:** animations, the game-over screen with New game, the desktop layout, and the flat style throughout.

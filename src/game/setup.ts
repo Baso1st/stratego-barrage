@@ -1,4 +1,5 @@
-import { emptyBoard, isOnBoard, withPiece } from './board.ts'
+import { BOARD_SIZE, emptyBoard, isOnBoard, withPiece } from './board.ts'
+import { shuffle, type Rng } from './random.ts'
 import type { Board, GameState, Placement, Player, Rank } from './types.ts'
 
 /** How many of each rank a player has: 8 pieces in all. */
@@ -16,6 +17,16 @@ export const ARMY: Readonly<Record<Rank, number>> = {
 export const SETUP_ROWS: Readonly<Record<Player, readonly number[]>> = {
   red: [6, 7, 8, 9],
   blue: [0, 1, 2, 3],
+}
+
+/** A valid setup with the player's pieces on random squares in their setup rows. */
+export function randomSetup(player: Player, rng: Rng): Placement[] {
+  const squares = shuffle(
+    SETUP_ROWS[player].flatMap((row) => Array.from({ length: BOARD_SIZE }, (_, col) => ({ row, col }))),
+    rng,
+  )
+  const ranks = (Object.keys(ARMY) as Rank[]).flatMap((rank) => Array<Rank>(ARMY[rank]).fill(rank))
+  return ranks.map((rank, i) => ({ rank, square: squares[i] }))
 }
 
 /** A new game with an empty board, waiting for both players to set up. */
