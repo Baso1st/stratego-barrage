@@ -4,11 +4,11 @@ The living record of where the project stands. Update it whenever a task is fini
 
 ## Current status
 
-The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) and the CD workflows (`deploy.yml`, `release.yml`) are written but haven't run yet. The bootstrap has been run (Pay-As-You-Go subscription, `centralus`), so the resource groups and deploy identities exist, and the GitHub `test` and `production` environments and secrets are set up. The template's demo page is still in place. Next: merge the pipeline in a PR (first deploy to test), then publish `v0.1.0`.
+The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) is bootstrapped (Pay-As-You-Go subscription, `centralus`), and the CD pipeline works end to end. Merges to `main` deploy to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/), and `v0.1.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/). The template's demo page is still in place. Next: clear out the template demo, then start on the board.
 
 ## Roadmap (draft)
 
-- [ ] **Project setup:** scaffold the React app ✅, add Vitest ✅, add CI ✅, protect `main` ✅, deploy to Azure (test and production), clear out the template demo
+- [ ] **Project setup:** scaffold the React app ✅, add Vitest ✅, add CI ✅, protect `main` ✅, deploy to Azure (test and production) ✅, clear out the template demo
 - [ ] **Board:** render the 10×10 board with the two lakes
 - [ ] **Setup phase:** player places their 8 pieces in their four starting rows; the computer places its own
 - [ ] **Movement:** legal moves for each piece, including Scouts moving several squares in a straight line
