@@ -4,7 +4,7 @@ The living record of where the project stands. Update it whenever a task is fini
 
 ## Current status
 
-The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) is bootstrapped (Pay-As-You-Go subscription, `centralus`), and the CD pipeline works end to end. Merges to `main` deploy to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/), and `v0.1.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/). The template's demo page is still in place. Next: clear out the template demo, then start on the board.
+The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) is bootstrapped (Pay-As-You-Go subscription, `centralus`), and the CD pipeline works end to end. Merges to `main` deploy to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/), and `v0.2.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/). Both sites show their version, and Dependabot keeps dependencies up to date. The template's demo page is still in place. The game design (rules, system and UI) is settled in `PLAN.md` on the `game-design` branch. Next: build step 1 of its build order, the engine basics. Clearing out the template demo happens in step 3, the first board UI work.
 
 ## Roadmap (draft)
 
@@ -36,7 +36,13 @@ The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vite
 - GitHub Actions signs in to Azure with OIDC: one managed identity per environment, each Contributor on its own resource group only. No Azure secrets or deployment tokens are stored in GitHub.
 - Dependabot keeps npm packages and GitHub Actions up to date with weekly PRs (minor and patch grouped, majors separate, 14-day cooldown on new versions). It skips major updates to `@types/node`, which tracks the Node version we run (24), and to TypeScript until typescript-eslint supports TypeScript 7.
 - The app shows its version from `git describe`: the release tag in production, the last tag plus commits since on test.
+- Game design (details in `PLAN.md` while it's being designed):
+  - The computer opponent plays by rules of thumb, at one default difficulty. It runs in the page, with no Web Worker, because it will eventually move behind an API.
+  - No saved games, and game over offers New game only (no rematch).
+  - Rules: Scouts can move and attack in the same turn; a piece can't move back and forth between the same two squares more than 3 times in a row; revealed pieces stay revealed for both sides; you play Red and move first.
+  - Mobile first, with touch and mouse: tap or click to select, then to move. No keyboard controls and no drag-and-drop.
+  - Modern flat visual style, styled with Tailwind CSS.
 
 ## Open questions
 
-- Styling approach?
+None right now.
