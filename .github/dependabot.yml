@@ -10,6 +10,14 @@ updates:
     # Wait until a release is 2 weeks old, so a broken or compromised one has time to be caught.
     cooldown:
       default-days: 14
+    ignore:
+      # Tracks the Node version we run (24), so it moves with Node, not on its own.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      # typescript-eslint doesn't support TypeScript 7 yet (its peer range stops below 6.1).
+      # Remove this once it does.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     groups:
       npm-minor-and-patch:
         patterns: ['*']
