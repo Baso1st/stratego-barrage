@@ -103,6 +103,8 @@ Both are Azure Static Web Apps on the Free tier. The infrastructure is code, in 
 | Path | What's there |
 | --- | --- |
 | `src/` | The React app |
+| `src/game/` | The game engine: all the rules, with no React |
+| `src/components/` | The UI components, like the board and its pieces |
 | `infra/` | Azure infrastructure, in Bicep |
 | `.github/workflows/` | The CI, deploy and release pipelines |
 | `docs/ROADMAP.md` | Current status, roadmap and decisions |

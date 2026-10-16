@@ -149,14 +149,15 @@ A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't 
 - **Built as** a 10×10 CSS grid of tappable squares.
 - **Square size:** squares are as large as the screen width allows. On a 360px-wide phone that's about 34px, a little under the usual 44px touch-target guideline. That's fine for tap-to-select, tap-to-move with clear highlights.
 - **Taps respond instantly:** double-tap zoom is turned off on the board.
-- **Lakes** are drawn as water squares, and your side is always at the bottom.
+- **Lakes** are each drawn as one 2×2 pool of water, and your side is always at the bottom.
 - **Moves animate:** a piece slides from its old square to its new one.
 
 ### Pieces
 
-- **Your pieces** show their rank: a number or letter plus an icon.
+- **Your pieces** show their rank: a number or letter, with an icon from the Lucide icon set above it: Marshal 10 (crown), General 9 (star), Miner 3 (pickaxe), Scout 2 (binoculars), Spy S (mask), Bomb B (bomb), Flag F (flag).
 - **Enemy pieces** show a plain back in their color until they're revealed. Revealed pieces stay face-up.
-- **Red and blue also differ in shape or pattern,** so the game never depends on telling the colors apart.
+- **Red pieces are rounded squares and Blue pieces are circles,** so the game never depends on telling the colors apart.
+- **Pieces scale with the board:** their sizes are a share of the square's width.
 - **An enemy piece that has moved gets a small marker,** because it can't be a Bomb or the Flag. The AI remembers that perfectly, so showing it keeps the game fair.
 
 ### Setup
@@ -209,6 +210,7 @@ None right now.
 - Mobile first, with touch and mouse: tap or click to select, then to move. No keyboard controls and no drag-and-drop.
 - Modern flat visual style.
 - Styled with Tailwind CSS.
+- Rank icons come from the Lucide icon set.
 
 **Scope**
 - This document covers only what we're building now. Ideas for the future stay out of it.

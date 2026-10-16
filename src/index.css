@@ -1,20 +1,10 @@
-:root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: light dark;
-}
+@import 'tailwindcss';
 
-body {
-  margin: 0;
-}
-
-main {
-  padding: 16px;
-}
-
-.app-version {
-  position: fixed;
-  right: 8px;
-  bottom: 8px;
-  font: 12px/1 ui-monospace, Consolas, monospace;
-  opacity: 0.7;
+/* The game's colors, used as Tailwind classes like `bg-water` and `bg-player-red`. */
+@theme {
+  --color-square: #e2e8f0;
+  --color-grid: #cbd5e1;
+  --color-water: #7dd3fc;
+  --color-player-red: #dc2626;
+  --color-player-blue: #1d4ed8;
 }
