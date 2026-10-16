@@ -88,7 +88,7 @@ export default function SetupScreen({ rng, onStart }: SetupScreenProps) {
       </p>
       <Board
         board={board}
-        isHighlighted={isSetupSquare}
+        tint={(square) => (isSetupSquare(square) ? 'zone' : undefined)}
         selected={selection?.from === 'board' ? selection.square : null}
         onSquareClick={handleSquareClick}
       />

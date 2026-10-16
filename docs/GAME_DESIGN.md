@@ -103,14 +103,14 @@ createGame(): GameState
 randomSetup(player, rng): Placement[]               // a valid setup on random squares
 setupError(player, placements): string | null      // why a setup isn't valid, or null
 placeSetup(state, player, placements): GameState   // throws if the setup isn't valid
-legalMoves(state): Move[]
-legalMovesFrom(state, square): Move[]               // one piece's moves, for highlighting
+legalMoves(position): Move[]                        // the full game or the mover's own view
+legalMovesFrom(position, square): Move[]            // one piece's moves, for highlighting
 applyMove(state, move): { state: GameState; events: GameEvent[] }   // throws if the move isn't legal
 viewFor(state, player): PlayerView                  // hides the opponent's unrevealed ranks
 ```
 
 - **Events for the UI:** `applyMove` also returns what happened, for example `moved`, `combat` with both ranks and the outcome, or `game-over`. The UI animates from those events instead of working out what changed.
-- **Hidden information:** `viewFor` returns the board as one player is allowed to see it, with the opponent's unrevealed pieces as blank backs. The UI and the AI both get only a `PlayerView`, so **the AI can't cheat by design**.
+- **Hidden information:** `viewFor` returns the board as one player is allowed to see it, with the opponent's unrevealed pieces as blank backs. The UI and the AI both get only a `PlayerView`, so **the AI can't cheat by design**. Legal moves never depend on hidden ranks, so `legalMoves` works on a player's own view as well as on the full game.
 - **Coordinates:** you're Red, in rows 6–9, at the bottom of the screen. The computer is Blue, in rows 0–3.
 
 ### Computer opponent (`src/ai/`)
@@ -128,7 +128,11 @@ viewFor(state, player): PlayerView                  // hides the opponent's unre
 
 ### React state
 
-A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't need a state library.
+A `useReducer` (`src/gameReducer.ts`) wraps the engine, so the engine *is* the reducer logic. We don't need a state library.
+
+- **Two actions:** `start` places both setups, and `move` plays a move for whoever's turn it is, keeping the events it returned for the UI.
+- **The reducer stays pure:** anything random, like the computer's setup or its move, is decided before dispatching.
+- **The computer's turn** is an effect in `App`: when it's Blue's turn, it waits, asks the AI for a move from Blue's view, and dispatches it.
 
 ## 3. UI design
 
@@ -173,11 +177,12 @@ A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't 
 
 ### Playing
 
-- **Moving:** tap one of your movable pieces, and its legal moves light up, with attacks marked differently. Tap a target to move there, or tap anywhere else to cancel.
-- **The last move is highlighted,** so you can see what the computer just did.
-- **Combat** shows both pieces face-up for about a second, for example "General (9) attacks Miner (3): General wins".
-- **The side panel** shows both sides' captured pieces and what the enemy has left. In Barrage, knowing what's left matters a lot.
-- **The computer's turn:** a short pause with a "thinking…" indicator, during which you can't move.
+- **The status line** above the board says "Your move." or "The computer is thinking…", and the result once the game ends.
+- **Moving:** tap one of your pieces that can move, and it gets an amber ring. Empty squares it can move to get an amber dot, and enemy pieces it can attack get an amber ring. Tap a target to move there; tap the piece again, or anywhere else, to put it down.
+- **The last move is tinted:** both of its squares get a pale amber background, so you can see what the computer just did.
+- **Combat** pops up over the board for 1.2 seconds: both pieces face-up with the loser faded, and what happened in words, for example "Your General (9) attacks enemy Miner (3): your General wins."
+- **The army panel** below the board shows both armies, with captured pieces faded and a count like "Enemy: 6 of 8 left". In Barrage, knowing what's left matters a lot.
+- **The computer's turn:** it waits 0.6 seconds before moving, or 1.8 seconds after a fight so the pop-up can be read first. You can't move while it's thinking.
 
 ### Game over
 

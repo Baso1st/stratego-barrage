@@ -18,8 +18,11 @@ export function sameSquare(a: Square, b: Square): boolean {
   return a.row === b.row && a.col === b.col
 }
 
-/** The piece on a square, or `null` if it's empty or off the board. */
-export function pieceAt(board: Board, square: Square): Piece | null {
+/**
+ * The piece on a square, or `null` if it's empty or off the board. Works on the full board
+ * and on a player's view of it.
+ */
+export function pieceAt<P>(board: readonly (readonly (P | null)[])[], square: Square): P | null {
   return isOnBoard(square) ? board[square.row][square.col] : null
 }
 

@@ -74,6 +74,8 @@ export type GameEvent =
     }
   | { readonly type: 'game-over'; readonly result: GameResult }
 
+export type CombatEvent = Extract<GameEvent, { type: 'combat' }>
+
 /** A piece as one player sees it. */
 export interface PieceView extends Omit<Piece, 'rank'> {
   /** `null` for an opponent's piece that hasn't been revealed. */
@@ -85,3 +87,6 @@ export interface PlayerView extends Omit<GameState, 'board'> {
   readonly player: Player
   readonly board: readonly (readonly (PieceView | null)[])[]
 }
+
+/** What's needed to work out legal moves. Both the full game and a player's view have it. */
+export type Position = Pick<PlayerView, 'board' | 'phase' | 'turn' | 'history'>

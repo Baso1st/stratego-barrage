@@ -4,7 +4,7 @@ The living record of where the project stands, and the only place progress is tr
 
 ## Current status
 
-**Working on:** Play (not started yet).
+**Working on:** Computer opponent (not started yet).
 
 - **Project setup is complete.**
   - The app is React + TypeScript on Vite, with Vitest installed but no tests yet.
@@ -13,8 +13,9 @@ The living record of where the project stands, and the only place progress is tr
   - Both sites show their version, and Dependabot keeps dependencies up to date.
 - **The game engine is built,** in `src/game/`, with all the rules.
 - **The board is on screen,** styled with Tailwind and laid out for a phone.
-- **The setup phase works.** You place your pieces with the tray, Randomize, Clear and Start. When you press Start, the computer (`src/ai/`) sets up from one of its hand-made layouts. After that the board shows both armies, but nothing can move yet.
-- All of this is on the `engine-basics` branch, which isn't merged yet.
+- **The setup phase works.** You place your pieces with the tray, Randomize, Clear and Start. When you press Start, the computer (`src/ai/`) sets up from one of its hand-made layouts.
+- **You can play a whole game.** Tap to select and move, fights pop up, the last move is tinted, and the army panel shows what's left. For now the computer plays random legal moves. When the game ends, the result shows and the whole enemy army is revealed; to play again you reload the page, until Polish adds New game.
+- The setup phase is on the `engine-basics` branch, and Play is on the `play` branch, which starts from it. Neither is merged yet.
 - **How the game should work** (rules, system design and UI) is in [GAME_DESIGN.md](GAME_DESIGN.md).
 
 ## Roadmap
@@ -25,7 +26,7 @@ We build these in order, one at a time, and finish each before starting the next
 - [x] **Game engine:** the rules as pure TypeScript in `src/game/`. Setup, legal moves (Scouts, lakes and the back-and-forth limit), combat, win, loss and draw, and each player's view of the board. Nothing on screen.
 - [x] **Board on screen:** add Tailwind, and draw the 10×10 board, the lakes and the pieces from a sample game, in the phone layout.
 - [x] **Setup phase:** you place your 8 pieces in your four rows (with Randomize, Clear and Start), and the computer places its own.
-- [ ] **Play:** tap to select and move, see fights, and take turns against a computer that makes random legal moves. This is the first playable release.
+- [x] **Play:** tap to select and move, see fights, and take turns against a computer that makes random legal moves. This is the first playable release.
 - [ ] **Computer opponent:** replace the random moves with the rules of thumb.
 - [ ] **Polish:** animations, the game-over screen with New game, the desktop layout, and the flat style throughout.
 - [ ] **Tests:** unit tests for the engine and the computer opponent, and component tests for the UI.

@@ -1,5 +1,5 @@
 import { BOARD_SIZE, isLake, isOnBoard, pieceAt, sameSquare } from './board.ts'
-import type { GameState, Move, Player, Rank, Square } from './types.ts'
+import type { Move, Player, Position, Rank, Square } from './types.ts'
 
 const IMMOVABLE: readonly Rank[] = ['bomb', 'flag']
 
@@ -13,8 +13,11 @@ const DIRECTIONS: readonly Square[] = [
   { row: 0, col: 1 },
 ]
 
-/** Every legal move for the player whose turn it is. */
-export function legalMoves(state: GameState): Move[] {
+/**
+ * Every legal move for the player whose turn it is. Takes the full game or that player's own
+ * view of it, since legal moves never depend on hidden ranks.
+ */
+export function legalMoves(state: Position): Move[] {
   const moves: Move[] = []
   state.board.forEach((cells, row) =>
     cells.forEach((_, col) => moves.push(...legalMovesFrom(state, { row, col }))),
@@ -29,9 +32,15 @@ export function legalMoves(state: GameState): Move[] {
  * enters a lake or a square held by its own side, Bombs and the Flag never move, and no
  * piece can go back and forth between the same two squares more than 3 times in a row.
  */
-export function legalMovesFrom(state: GameState, from: Square): Move[] {
+export function legalMovesFrom(state: Position, from: Square): Move[] {
   const piece = pieceAt(state.board, from)
-  if (state.phase !== 'playing' || piece?.owner !== state.turn || IMMOVABLE.includes(piece.rank)) {
+  // A piece with no known rank is one the viewer can't see, so it isn't theirs to move.
+  if (
+    state.phase !== 'playing' ||
+    piece?.owner !== state.turn ||
+    !piece.rank ||
+    IMMOVABLE.includes(piece.rank)
+  ) {
     return []
   }
 
