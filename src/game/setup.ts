@@ -60,13 +60,10 @@ export function placeSetup(
   const error = setupError(player, placements)
   if (error) throw new Error(error)
 
-  const placedOfRank: Partial<Record<Rank, number>> = {}
   let board = state.board
   for (const { rank, square } of placements) {
-    const n = (placedOfRank[rank] ?? 0) + 1
-    placedOfRank[rank] = n
     board = withPiece(board, square, {
-      id: `${player}-${rank}-${n}`,
+      id: `${player}-${square.row}-${square.col}`,
       owner: player,
       rank,
       revealed: false,

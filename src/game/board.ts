@@ -14,6 +14,10 @@ export function isLake({ row, col }: Square): boolean {
   return LAKE_ROWS.includes(row) && LAKE_COLS.includes(col)
 }
 
+export function sameSquare(a: Square, b: Square): boolean {
+  return a.row === b.row && a.col === b.col
+}
+
 /** The piece on a square, or `null` if it's empty or off the board. */
 export function pieceAt(board: Board, square: Square): Piece | null {
   return isOnBoard(square) ? board[square.row][square.col] : null

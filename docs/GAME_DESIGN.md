@@ -1,8 +1,8 @@
-# Plan: Game design
+# Game design
 
-**Status:** Building. Step 1 of the [build order](#5-build-order), the engine basics, is done. Every choice made so far is listed in [Decisions](#decisions).
+How the game works and how it's built: the rules, the system design and the UI. We build the game to match this document, and update it whenever a design decision changes. It doesn't track progress; the [roadmap](ROADMAP.md) does that.
 
-The goal is a complete, playable game of Barrage against the computer: set up, play, win or lose, start a new game. This plan covers only what we're building now: the rules, the system design and the UI.
+The goal is a complete, playable game of Barrage against the computer: set up, play, win or lose, start a new game. This document covers only what we're building now.
 
 ## 1. Rules
 
@@ -78,13 +78,14 @@ Three layers, with the rules kept apart from React so they're easy to test:
 - **Immutable state:** each move returns a new state, which keeps updates predictable and simple to test.
 - **All the rules live here,** covered by table-driven unit tests: every combat pairing, Scout lines and attacks, lakes, the back-and-forth limit, setup validation and game-over conditions.
 
-A first sketch of the types and functions:
+The main types and functions. The full set is exported from `src/game/index.ts`:
 
 ```ts
 type Player = 'red' | 'blue'
 type Rank = 'marshal' | 'general' | 'miner' | 'scout' | 'spy' | 'bomb' | 'flag'
 
 interface Piece { id: string; owner: Player; rank: Rank; revealed: boolean; hasMoved: boolean }
+// id is the starting square, e.g. 'red-6-4', so it never gives away the rank
 interface Square { row: number; col: number }
 interface Move { from: Square; to: Square }
 
@@ -102,7 +103,7 @@ setupError(player, placements): string | null      // why a setup isn't valid, o
 placeSetup(state, player, placements): GameState   // throws if the setup isn't valid
 legalMoves(state): Move[]
 legalMovesFrom(state, square): Move[]               // one piece's moves, for highlighting
-applyMove(state, move): { state: GameState; events: GameEvent[] }
+applyMove(state, move): { state: GameState; events: GameEvent[] }   // throws if the move isn't legal
 viewFor(state, player): PlayerView                  // hides the opponent's unrevealed ranks
 ```
 
@@ -179,24 +180,12 @@ A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't 
 
 ## 4. Testing
 
+Tests are written once the game is built; they're the last item on the roadmap.
+
 - **Engine and AI:** Vitest unit tests. This is where most of the tests live.
 - **UI:** Testing Library and jsdom for component tests of the key interactions: placing pieces, and selecting and moving.
 
-## 5. Build order
-
-Each step is a small PR that keeps `main` working.
-
-1. **Engine basics:** the types, the board, setup, and legal moves (including Scouts and lakes).
-2. **Engine combat and game end:** combat, revealing, the back-and-forth limit, and win conditions.
-3. **Board UI:** add Tailwind, and render a fixed game state in the phone layout.
-4. **Setup UI,** plus the computer's setup.
-5. **Play loop:** you move, and the computer plays random legal moves. **This is the first playable release.**
-6. **Computer opponent:** replace the random moves with the rules of thumb.
-7. **Polish:** animations, the game-over screen, the desktop layout, and the flat visual style throughout.
-
-The tests in [section 4](#4-testing) come after these steps.
-
-## 6. Open questions
+## 5. Open questions
 
 None right now.
 
@@ -222,4 +211,4 @@ None right now.
 - Styled with Tailwind CSS.
 
 **Scope**
-- This plan covers only what we're building now. Ideas for the future stay out of it.
+- This document covers only what we're building now. Ideas for the future stay out of it.

@@ -106,3 +106,4 @@ Both are Azure Static Web Apps on the Free tier. The infrastructure is code, in 
 | `infra/` | Azure infrastructure, in Bicep |
 | `.github/workflows/` | The CI, deploy and release pipelines |
 | `docs/ROADMAP.md` | Current status, roadmap and decisions |
+| `docs/GAME_DESIGN.md` | How the game works and how it's built: rules, system design and UI |
