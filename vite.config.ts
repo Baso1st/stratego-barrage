@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
@@ -17,7 +18,7 @@ function gitVersion(): string {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   define: {
     __APP_VERSION__: JSON.stringify(gitVersion()),
   },
