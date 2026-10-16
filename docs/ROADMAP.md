@@ -34,7 +34,7 @@ The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vite
   - **Production:** publishing a GitHub Release with a `v*` tag (e.g. `v0.1.0`) on a `main` commit deploys that commit here, after the user approves the deployment in GitHub (required reviewer on the `production` environment).
 - Infrastructure as code in Bicep (`infra/`). The CD pipeline applies `infra/main.bicep` on every deployment, so infra changes are promoted from test to production like app changes. A one-time bootstrap, run by hand, creates the resource groups and the identities GitHub Actions signs in as.
 - GitHub Actions signs in to Azure with OIDC: one managed identity per environment, each Contributor on its own resource group only. No Azure secrets or deployment tokens are stored in GitHub.
-- Dependabot keeps npm packages and GitHub Actions up to date with weekly PRs (minor and patch grouped, majors separate, 14-day cooldown on new versions).
+- Dependabot keeps npm packages and GitHub Actions up to date with weekly PRs (minor and patch grouped, majors separate, 14-day cooldown on new versions). It skips major updates to `@types/node`, which tracks the Node version we run (24), and to TypeScript until typescript-eslint supports TypeScript 7.
 - The app shows its version from `git describe`: the release tag in production, the last tag plus commits since on test.
 
 ## Open questions
