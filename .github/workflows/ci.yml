@@ -18,11 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - uses: ./.github/actions/build
+
+  # Every merge to main goes to the test environment.
+  deploy-test:
+    if: github.event_name == 'push'
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: test
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write

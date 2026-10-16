@@ -1,0 +1,27 @@
+name: Build
+description: Lint, test and build the app, check the Bicep compiles, and upload dist/ as the "dist" artifact. Expects the repo to be checked out.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24
+        cache: npm
+    - run: npm ci
+      shell: bash
+    - run: npm run lint
+      shell: bash
+    - run: npm test
+      shell: bash
+    - run: npm run build
+      shell: bash
+    - name: Check Bicep
+      shell: bash
+      run: |
+        az bicep build --file infra/main.bicep --stdout > /dev/null
+        az bicep build --file infra/bootstrap/main.bicep --stdout > /dev/null
+    - uses: actions/upload-artifact@v7
+      with:
+        name: dist
+        path: dist

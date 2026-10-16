@@ -1,0 +1,59 @@
+name: Deploy
+
+# Applies infra/main.bicep to one environment, then uploads the run's "dist" artifact
+# to that environment's Static Web App. Called by ci.yml (test) and release.yml (production).
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: test or production
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.infra.outputs.url }}
+    # One deploy at a time per environment, and never cancel one that has started.
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      RESOURCE_GROUP: rg-stratego-barrage-${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy infrastructure
+        id: infra
+        run: |
+          outputs=$(az deployment group create \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "stratego-barrage-$GITHUB_RUN_ID" \
+            --template-file infra/main.bicep \
+            --parameters environmentName="$ENVIRONMENT" \
+            --query properties.outputs --output json)
+          echo "name=$(jq -r .name.value <<< "$outputs")" >> "$GITHUB_OUTPUT"
+          echo "url=$(jq -r .url.value <<< "$outputs")" >> "$GITHUB_OUTPUT"
+      - name: Upload the site
+        env:
+          APP_NAME: ${{ steps.infra.outputs.name }}
+        run: |
+          token=$(az staticwebapp secrets list --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
+            --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          # Each Static Web App only uses its own "production" slot; test and production are separate apps.
+          SWA_CLI_DEPLOYMENT_TOKEN="$token" npx --yes @azure/static-web-apps-cli@2.0.10 deploy dist --env production

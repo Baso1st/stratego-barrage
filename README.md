@@ -8,6 +8,10 @@ A web-based version of **Stratego Barrage**, the fast, small-army variant of the
 - **Front end only** — the whole game runs in the browser. There is no back end for now.
 - **Built with React.**
 
+## Releasing
+
+Every merge to `main` deploys to the **test** site. To release to **production**, publish a GitHub Release with a new `v*` tag (e.g. `v0.1.0`) on `main`. Both sites are Azure Static Web Apps; the infrastructure is in [`infra/`](infra/README.md).
+
 ## About Stratego Barrage
 
 Barrage is played on the standard 10×10 Stratego board, with the two lakes in the middle, but each player gets only 8 pieces instead of 40:
