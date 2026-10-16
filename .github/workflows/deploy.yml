@@ -56,4 +56,5 @@ jobs:
             --query properties.apiKey --output tsv)
           echo "::add-mask::$token"
           # Each Static Web App only uses its own "production" slot; test and production are separate apps.
+          # The CLI version is pinned by hand: Dependabot can't see versions inside run scripts.
           SWA_CLI_DEPLOYMENT_TOKEN="$token" npx --yes @azure/static-web-apps-cli@2.0.10 deploy dist --env production

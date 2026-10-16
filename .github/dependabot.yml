@@ -1,0 +1,28 @@
+# Weekly PRs that keep npm packages and GitHub Actions up to date. They go through CI
+# like any other PR. Minor and patch bumps are grouped into one PR per ecosystem; major
+# bumps get a PR each, since they're the ones likely to need code changes.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Wait until a release is 2 weeks old, so a broken or compromised one has time to be caught.
+    cooldown:
+      default-days: 14
+    groups:
+      npm-minor-and-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/*
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14
+    groups:
+      github-actions:
+        patterns: ['*']
