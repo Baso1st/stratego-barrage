@@ -67,6 +67,8 @@ Keep branches small and merge them within a day or two, so they don't drift from
 
 `main` is protected by a ruleset: no direct or force pushes, linear history only, and a PR can only merge when CI passes and the branch is up to date.
 
+**Dependabot** opens PRs each week to update npm packages and GitHub Actions: one grouped PR for minor and patch updates, and a PR per major update. It waits until a new version is two weeks old before proposing it. Treat its PRs like any other: let CI pass, merge, and check test. If one falls behind `main`, click **Update branch** or comment `@dependabot rebase`.
+
 ## Releasing to production
 
 Production changes only when a release is published and approved.
@@ -87,6 +89,8 @@ The release workflow checks that the tag is on `main`, rebuilds that commit, and
 | --- | --- | --- |
 | Test | https://ambitious-sky-0c8060710.3.azurestaticapps.net/ | Every merge to `main` |
 | Production | https://lively-desert-0006fa410.6.azurestaticapps.net/ | A release is published and approved |
+
+Each site shows the version it's running in its bottom-right corner, from `git describe`. Production shows its release tag, like `v0.2.0`. Test shows the last release plus what's been merged since, like `v0.2.0-3-gabc1234`: 3 commits after `v0.2.0`, at commit `abc1234`. A local build ends in `-dirty` when you have uncommitted changes.
 
 Both are Azure Static Web Apps on the Free tier. The infrastructure is code, in [`infra/`](infra/README.md), and changes to it ship the same way as app changes: to test on merge, to production on release. You only need the Azure CLI if you change `infra/`; check your change compiles with `az bicep build --file infra/main.bicep`.
 

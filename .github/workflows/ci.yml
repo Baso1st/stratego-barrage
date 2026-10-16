@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history and tags, so the build can stamp its version with git describe.
+          fetch-depth: 0
       - uses: ./.github/actions/build
 
   # Every merge to main goes to the test environment.

@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # Full history and tags, for the main check below and the build's version stamp.
           fetch-depth: 0
       - name: Check the release is a commit on main
         run: |
