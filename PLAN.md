@@ -1,6 +1,6 @@
 # Plan: Game design
 
-**Status:** Design settled; ready to build. Every choice made so far is listed in [Decisions](#decisions).
+**Status:** Building. Step 1 of the [build order](#5-build-order), the engine basics, is done. Every choice made so far is listed in [Decisions](#decisions).
 
 The goal is a complete, playable game of Barrage against the computer: set up, play, win or lose, start a new game. This plan covers only what we're building now: the rules, the system design and the UI.
 
@@ -97,9 +97,11 @@ interface GameState {
   result?: { winner: Player | null; reason: 'flag' | 'no-moves' | 'draw' }
 }
 
-createGame(seed): GameState
-placeSetup(state, player, placements): GameState   // validates the 8 pieces and rows
+createGame(): GameState
+setupError(player, placements): string | null      // why a setup isn't valid, or null
+placeSetup(state, player, placements): GameState   // throws if the setup isn't valid
 legalMoves(state): Move[]
+legalMovesFrom(state, square): Move[]               // one piece's moves, for highlighting
 applyMove(state, move): { state: GameState; events: GameEvent[] }
 viewFor(state, player): PlayerView                  // hides the opponent's unrevealed ranks
 ```
@@ -184,13 +186,15 @@ A `useReducer` wraps the engine, so the engine *is* the reducer logic. We don't 
 
 Each step is a small PR that keeps `main` working.
 
-1. **Engine basics:** the types, the board, legal moves (including Scouts and lakes), and their tests.
-2. **Engine combat and game end:** combat, revealing, the back-and-forth limit, win conditions, and their tests.
-3. **Board UI:** add Tailwind, and render a fixed game state in the phone layout. This replaces the template demo.
+1. **Engine basics:** the types, the board, setup, and legal moves (including Scouts and lakes).
+2. **Engine combat and game end:** combat, revealing, the back-and-forth limit, and win conditions.
+3. **Board UI:** add Tailwind, and render a fixed game state in the phone layout.
 4. **Setup UI,** plus the computer's setup.
 5. **Play loop:** you move, and the computer plays random legal moves. **This is the first playable release.**
 6. **Computer opponent:** replace the random moves with the rules of thumb.
 7. **Polish:** animations, the game-over screen, the desktop layout, and the flat visual style throughout.
+
+The tests in [section 4](#4-testing) come after these steps.
 
 ## 6. Open questions
 

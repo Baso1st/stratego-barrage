@@ -4,16 +4,11 @@ The living record of where the project stands. Update it whenever a task is fini
 
 ## Current status
 
-The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) is bootstrapped (Pay-As-You-Go subscription, `centralus`), and the CD pipeline works end to end. Merges to `main` deploy to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/), and `v0.2.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/). Both sites show their version, and Dependabot keeps dependencies up to date. The template's demo page is still in place. The game design (rules, system and UI) is settled in `PLAN.md` on the `game-design` branch. Next: build step 1 of its build order, the engine basics. Clearing out the template demo happens in step 3, the first board UI work.
+The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) is bootstrapped (Pay-As-You-Go subscription, `centralus`), and the CD pipeline works end to end. Merges to `main` deploy to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/), and `v0.2.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/). Both sites show their version, and Dependabot keeps dependencies up to date. The Vite template's demo page and assets have been removed; the app shows just a heading for now. The game design (rules, system and UI) is settled in `PLAN.md`, and we're building it in the order the plan lists. Step 1, the engine basics (types, board, setup and legal moves, in `src/game/`), is implemented on the `engine-basics` branch, along with the template cleanup. Tests come after the implementation steps. Next: step 2, combat and game end.
 
 ## Roadmap (draft)
 
-- [ ] **Project setup:** scaffold the React app ✅, add Vitest ✅, add CI ✅, protect `main` ✅, deploy to Azure (test and production) ✅, clear out the template demo
-The React + TypeScript app is scaffolded with Vite and `npm run dev` works. Vitest is installed (no tests yet), and the GitHub Actions CI workflow (`.github/workflows/ci.yml`: lint, test, build) runs green on GitHub, and `main` is protected by a ruleset. The Azure infrastructure (Bicep, in `infra/`) and the CD workflows (`deploy.yml`, `release.yml`) are written but haven't run yet. The bootstrap has been run (Pay-As-You-Go subscription, `centralus`), so the resource groups and deploy identities exist, and the GitHub `test` and `production` environments and secrets are set up. The template's demo page is still in place. Next: merge the pipeline in a PR (first deploy to test), then publish `v0.1.0`.
-
-## Roadmap (draft)
-
-- [ ] **Project setup:** scaffold the React app ✅, add Vitest ✅, add CI ✅, protect `main` ✅, deploy to Azure (test and production), clear out the template demo
+- [x] **Project setup:** scaffold the React app ✅, add Vitest ✅, add CI ✅, protect `main` ✅, deploy to Azure (test and production) ✅, clear out the template demo ✅
 - [ ] **Board:** render the 10×10 board with the two lakes
 - [ ] **Setup phase:** player places their 8 pieces in their four starting rows; the computer places its own
 - [ ] **Movement:** legal moves for each piece, including Scouts moving several squares in a straight line

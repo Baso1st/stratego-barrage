@@ -103,7 +103,6 @@ Both are Azure Static Web Apps on the Free tier. The infrastructure is code, in 
 | Path | What's there |
 | --- | --- |
 | `src/` | The React app |
-| `public/` | Static files served as-is |
 | `infra/` | Azure infrastructure, in Bicep |
 | `.github/workflows/` | The CI, deploy and release pipelines |
 | `docs/ROADMAP.md` | Current status, roadmap and decisions |
