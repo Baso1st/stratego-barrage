@@ -25,12 +25,13 @@ function App() {
   // The computer sets up only once you start, so its layout can't be seen while you place yours.
   const handleStart = (red: Placement[]) => dispatch({ type: 'start', red, blue: chooseSetup(rng) })
   const handleMove = (move: Move) => dispatch({ type: 'move', move })
+  const handleNewGame = () => dispatch({ type: 'new-game' })
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col gap-3 p-2">
+    <main className="mx-auto flex w-full max-w-md flex-col gap-3 p-2 md:max-w-5xl md:p-6">
       <h1 className="text-center text-xl font-semibold">Stratego Barrage</h1>
       {game ? (
-        <PlayScreen game={game} events={events} onMove={handleMove} />
+        <PlayScreen game={game} events={events} onMove={handleMove} onNewGame={handleNewGame} />
       ) : (
         <SetupScreen rng={rng} onStart={handleStart} />
       )}

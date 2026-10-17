@@ -21,6 +21,7 @@ export interface AppState {
 export type AppAction =
   | { readonly type: 'start'; readonly red: Placement[]; readonly blue: Placement[] }
   | { readonly type: 'move'; readonly move: Move }
+  | { readonly type: 'new-game' }
 
 export const initialState: AppState = { game: null, events: [] }
 
@@ -35,5 +36,7 @@ export function gameReducer(state: AppState, action: AppAction): AppState {
       const { state: game, events } = applyMove(state.game, action.move)
       return { game, events }
     }
+    case 'new-game':
+      return initialState
   }
 }

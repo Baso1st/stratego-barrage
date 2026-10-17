@@ -50,6 +50,8 @@ Then open http://localhost:5173. The page updates as you edit files in `src/`.
 | `npm run build` | Type-check, then build the site into `dist/` |
 | `npm run preview` | Serve the built `dist/` locally |
 
+Tests sit next to the code they test. `*.test.ts` files (the engine, the computer opponent and the reducer) run in Node, and `*.test.tsx` files (the components) run in jsdom with Testing Library.
+
 Before you push, run `npm run lint`, `npm test` and `npm run build`. CI runs the same checks and won't let a PR merge until they pass.
 
 ## Day-to-day workflow
@@ -106,6 +108,7 @@ Both are Azure Static Web Apps on the Free tier. The infrastructure is code, in 
 | `src/game/` | The game engine: all the rules, with no React |
 | `src/components/` | The UI components, like the board and its pieces |
 | `src/ai/` | The computer opponent |
+| `src/test/` | Test helpers: building game positions, and the setup for component tests |
 | `infra/` | Azure infrastructure, in Bicep |
 | `.github/workflows/` | The CI, deploy and release pipelines |
 | `docs/ROADMAP.md` | Current status, roadmap and decisions |
