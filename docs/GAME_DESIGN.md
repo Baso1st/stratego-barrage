@@ -106,6 +106,7 @@ placeSetup(state, player, placements): GameState   // throws if the setup isn't 
 legalMoves(position): Move[]                        // the full game or the mover's own view
 legalMovesFrom(position, square): Move[]            // one piece's moves, for highlighting
 applyMove(state, move): { state: GameState; events: GameEvent[] }   // throws if the move isn't legal
+resolveCombat(attacker, defender): CombatResult     // who wins a fight between two ranks
 viewFor(state, player): PlayerView                  // hides the opponent's unrevealed ranks
 ```
 
@@ -123,6 +124,14 @@ viewFor(state, player): PlayerView                  // hides the opponent's unre
   - use Scouts to uncover unknown pieces;
   - keep the Marshal away from a possible Spy;
   - guard the Flag.
+- **How a move is scored:**
+  - **Guessing hidden ranks:** for each enemy piece it can't see, the computer works out how likely each rank is. It goes by the ranks it has seen, the pieces that have been captured, and which pieces have moved: a piece that has moved can't be a Bomb or the Flag.
+  - **Piece values:** Flag 300, Marshal 100, General 80, Spy 55, Miner 45, Bomb 25, Scout 15.
+  - **Attacks:** an attack is worth what it expects to take, less what it expects to lose, over every rank the target could be.
+  - **Danger:** a piece next to an enemy that could beat it is at risk, by the chance of losing times its value; a tie counts as half. Moving out of danger earns that much, and moving into danger costs it. This is what makes it back away from stronger pieces and keeps the Marshal away from a possible Spy.
+  - **Scouting:** a Scout gets a bonus for attacking an unknown piece.
+  - **The Flag:** a move that would let the enemy take the Flag next turn costs the Flag's value times the chance. That threat is an enemy next to the Flag that can move, or a Scout with a clear line to it. When enemies come within 3 squares of the Flag, attacking them earns a bonus and pieces are drawn back toward it.
+  - **Advancing:** pieces are drawn toward the enemy piece most worth attacking, more strongly the closer it is, and get a small bonus for each row they move forward. The Spy stays back.
 - **One difficulty level** for everyone.
 - **Runs in the page:** no Web Worker.
 
@@ -130,13 +139,15 @@ viewFor(state, player): PlayerView                  // hides the opponent's unre
 
 A `useReducer` (`src/gameReducer.ts`) wraps the engine, so the engine *is* the reducer logic. We don't need a state library.
 
-- **Two actions:** `start` places both setups, and `move` plays a move for whoever's turn it is, keeping the events it returned for the UI.
+- **Three actions:** `start` places both setups, `move` plays a move for whoever's turn it is (keeping the events it returned for the UI), and `new-game` goes back to setup.
 - **The reducer stays pure:** anything random, like the computer's setup or its move, is decided before dispatching.
 - **The computer's turn** is an effect in `App`: when it's Blue's turn, it waits, asks the AI for a move from Blue's view, and dispatches it.
 
 ## 3. UI design
 
 - **Look:** modern and flat. Solid colors, simple shapes, and no textures or 3D effects.
+  - Panels, cards and the combat pop-up share one style: solid white, a thin outline and rounded corners, with no shadows.
+  - The browser tab shows a red Flag icon in the same style.
 - **Mobile first:** the layout is designed for a phone held upright, then scales up for tablets and desktops.
 - **Touch and mouse:** every action is a tap or a click and works the same either way. Nothing depends on hovering, because touch screens have no hover.
 - **Styled with Tailwind CSS,** using the official Vite plugin. The game's colors (red, blue, water, board) are defined once as Tailwind theme colors. Tailwind is mobile first too: plain classes style the phone layout, and `md:` and `lg:` classes adjust it for bigger screens.
@@ -147,8 +158,8 @@ A `useReducer` (`src/gameReducer.ts`) wraps the engine, so the engine *is* the r
 
 ### Layout
 
-- **Phone (upright):** the board fills the screen width. The turn indicator sits above it, and the side panel or setup tray sits below it.
-- **Desktop:** the board grows to a comfortable maximum size, with the side panel beside it.
+- **Phone (upright):** the board fills the screen width. The status line sits above it, and the army panel or setup tray sits below it.
+- **Desktop and tablet** (768px wide and up, Tailwind's `md:`): the panel moves beside the board, and its pieces sit 4 to a row so they're a comfortable size. The board grows as large as the window's height allows, up to 640px.
 
 ### Board
 
@@ -156,7 +167,7 @@ A `useReducer` (`src/gameReducer.ts`) wraps the engine, so the engine *is* the r
 - **Square size:** squares are as large as the screen width allows. On a 360px-wide phone that's about 34px, a little under the usual 44px touch-target guideline. That's fine for tap-to-select, tap-to-move with clear highlights.
 - **Taps respond instantly:** double-tap zoom is turned off on the board.
 - **Lakes** are each drawn as one 2×2 pool of water, and your side is always at the bottom.
-- **Moves animate:** a piece slides from its old square to its new one.
+- **Moves animate:** a piece slides from its old square to its new one, in 0.4 seconds, for both sides' moves. When a fight is lost, the loser stays on screen until the attacker arrives, then shrinks and fades out over 0.7 seconds: an attacker that loses slides in and fades, and a defender that loses fades from under the winner. Nothing slides or fades if the device asks for reduced motion.
 
 ### Pieces
 
@@ -179,22 +190,29 @@ A `useReducer` (`src/gameReducer.ts`) wraps the engine, so the engine *is* the r
 
 - **The status line** above the board says "Your move." or "The computer is thinking…", and the result once the game ends.
 - **Moving:** tap one of your pieces that can move, and it gets an amber ring. Empty squares it can move to get an amber dot, and enemy pieces it can attack get an amber ring. Tap a target to move there; tap the piece again, or anywhere else, to put it down.
+- **For screen readers,** every square has a name: a piece names itself ("Red General", "Blue piece"), an empty square says where it is, a square the picked-up piece can move to is "Move here", and an enemy piece it can attack is "Attack Blue piece".
 - **The last move is tinted:** both of its squares get a pale amber background, so you can see what the computer just did.
-- **Combat** pops up over the board for 1.2 seconds: both pieces face-up with the loser faded, and what happened in words, for example "Your General (9) attacks enemy Miner (3): your General wins."
+- **Combat** pops up over the board for 4 seconds, fading in and out: both pieces face-up with the loser faded, and what happened in words, for example "Your General (9) attacks enemy Miner (3): your General wins." It sits at the top or bottom of the board, whichever is away from the fight, so the fight itself stays in view. Taps go through it to the board.
 - **The army panel** below the board shows both armies, with captured pieces faded and a count like "Enemy: 6 of 8 left". In Barrage, knowing what's left matters a lot.
-- **The computer's turn:** it waits 0.6 seconds before moving, or 1.8 seconds after a fight so the pop-up can be read first. You can't move while it's thinking.
+- **The computer's turn:** it waits 0.8 seconds before moving, or 4.8 seconds after a fight so the pop-up can be read first. You can't move while it's thinking.
 
 ### Game over
 
-- Shows who won and why, and reveals the whole enemy army.
-- A **New game** button starts over.
+- A card takes the place of the status line. It shows who won and why, for example "You win! You captured the enemy Flag.", next to a **New game** button that goes back to setup.
+- The whole enemy army is revealed on the board.
 
 ## 4. Testing
 
-Tests are written once the game is built; they're the last item on the roadmap.
+Vitest runs two sets of tests, set up as projects in `vite.config.ts`. Tests sit next to the code they test.
 
-- **Engine and AI:** Vitest unit tests. This is where most of the tests live.
-- **UI:** Testing Library and jsdom for component tests of the key interactions: placing pieces, and selecting and moving.
+- **Logic** (`*.test.ts`, in Node): unit tests for the engine, the computer opponent and the app's reducer. This is where most of the tests live.
+  - **Engine:** combat, legal moves (including Scouts, lakes and the back-and-forth limit), applying moves, win, loss and draw, setup, each player's view, and the random number generator. Random games played to the end check that the engine always finishes a game and that legal moves are the same from the full game and from the mover's own view.
+  - **Computer opponent:** one small position for each rule of thumb, checking it makes the move the rule calls for. Its setups are always valid and use all 8 variations. It only ever plays legal moves, it plays the same whatever Red's unseen pieces really are, and it beats a random player in at least 36 of 40 games.
+  - **Positions** are built with helpers in `src/test/positions.ts`, like `position([red('general', 7, 4), blue('flag', 0, 0)])`. Any piece left off the board counts as captured, so every position is one that could really happen.
+- **UI** (`*.test.tsx`, in jsdom): component tests with Testing Library and user-event for the key interactions. They cover placing, moving, Randomize, Clear and Start in setup; picking up and moving a piece, the fight pop-up, the army panel and game over in play; and a whole turn with the computer in the app.
+  - The tests find things the way a screen reader would, by role and name.
+  - jsdom can't run animations, so the setup file (`src/test/setup.ts`) reports that the user prefers reduced motion, and nothing animates.
+  - Timers (the pop-up, the computer's pause) are controlled with Vitest's fake timers.
 
 ## 5. Open questions
 

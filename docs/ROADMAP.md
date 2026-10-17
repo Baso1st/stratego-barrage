@@ -4,18 +4,21 @@ The living record of where the project stands, and the only place progress is tr
 
 ## Current status
 
-**Working on:** Computer opponent (not started yet).
+**Working on:** nothing. Every roadmap item is done.
 
 - **Project setup is complete.**
-  - The app is React + TypeScript on Vite, with Vitest installed but no tests yet.
+  - The app is React + TypeScript on Vite.
   - CI lints, tests and builds every PR, and `main` is protected by a ruleset.
   - Every merge to `main` deploys to test (https://ambitious-sky-0c8060710.3.azurestaticapps.net/). `v0.2.0` is released to production (https://lively-desert-0006fa410.6.azurestaticapps.net/).
   - Both sites show their version, and Dependabot keeps dependencies up to date.
 - **The game engine is built,** in `src/game/`, with all the rules.
 - **The board is on screen,** styled with Tailwind and laid out for a phone.
 - **The setup phase works.** You place your pieces with the tray, Randomize, Clear and Start. When you press Start, the computer (`src/ai/`) sets up from one of its hand-made layouts.
-- **You can play a whole game.** Tap to select and move, fights pop up, the last move is tinted, and the army panel shows what's left. For now the computer plays random legal moves. When the game ends, the result shows and the whole enemy army is revealed; to play again you reload the page, until Polish adds New game.
-- The setup phase is on the `engine-basics` branch, and Play is on the `play` branch, which starts from it. Neither is merged yet.
+- **You can play a whole game.** Tap to select and move, fights pop up, the last move is tinted, and the army panel shows what's left. Moves slide from square to square. When the game ends, the result shows with a New game button, and the whole enemy army is revealed.
+- **The computer plays by rules of thumb.** It guesses hidden ranks from what it has seen, makes the attacks worth making, backs away from stronger pieces, scouts with its Scouts, and guards its Flag. In simulated games it beats a random player about 98% of the time.
+- **It's tested.** 85 tests, all run by `npm test` and in CI. There are unit tests for the engine, the computer opponent and the reducer, and component tests for setup, play and the app.
+- **It's laid out for phones and desktops.** On a wide screen the panel sits beside the board, and the board grows to fit the window. The style is flat throughout.
+- The setup phase and Play are merged into `main`. The computer opponent, Polish and the tests are on the `computer-opponent` branch, not merged yet.
 - **How the game should work** (rules, system design and UI) is in [GAME_DESIGN.md](GAME_DESIGN.md).
 
 ## Roadmap
@@ -27,9 +30,9 @@ We build these in order, one at a time, and finish each before starting the next
 - [x] **Board on screen:** add Tailwind, and draw the 10×10 board, the lakes and the pieces from a sample game, in the phone layout.
 - [x] **Setup phase:** you place your 8 pieces in your four rows (with Randomize, Clear and Start), and the computer places its own.
 - [x] **Play:** tap to select and move, see fights, and take turns against a computer that makes random legal moves. This is the first playable release.
-- [ ] **Computer opponent:** replace the random moves with the rules of thumb.
-- [ ] **Polish:** animations, the game-over screen with New game, the desktop layout, and the flat style throughout.
-- [ ] **Tests:** unit tests for the engine and the computer opponent, and component tests for the UI.
+- [x] **Computer opponent:** replace the random moves with the rules of thumb.
+- [x] **Polish:** animations, the game-over screen with New game, the desktop layout, and the flat style throughout.
+- [x] **Tests:** unit tests for the engine and the computer opponent, and component tests for the UI.
 
 ## Decisions
 

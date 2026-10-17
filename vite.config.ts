@@ -23,7 +23,18 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(gitVersion()),
   },
   test: {
-    // No tests yet; the first ones arrive with the game logic.
-    passWithNoTests: true,
+    projects: [
+      // The engine, the computer opponent and the app's reducer: plain TypeScript, run in Node.
+      { test: { name: 'logic', include: ['src/**/*.test.ts'], environment: 'node' } },
+      // The components, rendered in a simulated browser.
+      {
+        test: {
+          name: 'ui',
+          include: ['src/**/*.test.tsx'],
+          environment: 'jsdom',
+          setupFiles: ['src/test/setup.ts'],
+        },
+      },
+    ],
   },
 })
